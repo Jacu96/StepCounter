@@ -2,11 +2,13 @@ package com.example.jacek.stepcounter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 import android.app.IntentService;
 import android.app.AlarmManager;
@@ -17,11 +19,17 @@ import java.util.Calendar;
 
 public class SensorListener extends IntentService implements SensorEventListener {
 
+    private final String TAG = "SensorListener";
     private static float steps;
     private static float yesterdaySteps;
     private static float sinceBoot = 0;
     private SensorManager sensorManager;
     private Calendar calendar = Calendar.getInstance();
+    SharedPreferences stepsSP;
+    SharedPreferences.Editor stepsSPEditor;
+    private static boolean startFlag;
+
+
 
     public SensorListener() {
         super("test-service");
@@ -32,9 +40,19 @@ public class SensorListener extends IntentService implements SensorEventListener
      * Służy do resetowania licznika kroków
      */
     public static void resetSteps() {
+        Log.d("resetSteps", "RESET KURWA"+yesterdaySteps);
 
-        yesterdaySteps = sinceBoot;
-        steps = 0;
+        if(startFlag) {
+            yesterdaySteps = sinceBoot;
+            steps = 0;
+            Log.d("resetSteps", "i zresetowal" + yesterdaySteps);
+
+        }
+        else {
+            Log.d("resetSteps", "nie zresetował" + yesterdaySteps);
+            startFlag=true;
+        }
+
 
     }
 
@@ -67,7 +85,13 @@ public class SensorListener extends IntentService implements SensorEventListener
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 1);
+
+        startFlag=false;
         startAlarm(calendar);
+
+        stepsSP=getSharedPreferences("com.example.jacek.stepcounter",Context.MODE_PRIVATE);
+        stepsSPEditor=stepsSP.edit();
+        yesterdaySteps=stepsSP.getFloat("yesterdaySteps",0);
 
     }
 
@@ -77,10 +101,14 @@ public class SensorListener extends IntentService implements SensorEventListener
      * @param c
      */
     private void startAlarm(Calendar c) {
+        Log.d(TAG, "start alarm"+yesterdaySteps);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+        //Hipoteza: requestcode 1 to on prosi o wyslanie i moze w wolnej chwili wysle a 0 to ze wyslac i chuj
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        Log.d(TAG, "start alarm"+yesterdaySteps);
+
 
     }
 
@@ -93,11 +121,15 @@ public class SensorListener extends IntentService implements SensorEventListener
     public void onSensorChanged(SensorEvent event) {
         sinceBoot = event.values[0];
         steps = event.values[0] - yesterdaySteps;
-
+        Log.d(TAG, "yesterday="+yesterdaySteps);
         Intent intent = new Intent();
         intent.setAction(MainActivity.BROADCAST_ACTION);
         intent.putExtra("data", steps);
         sendBroadcast(intent);
+
+    //pro restarcie appki nadal pamięta kroki dzięki temu shared prefereces
+        stepsSPEditor.putFloat("yesterdaySteps",yesterdaySteps);
+        stepsSPEditor.commit();
 
     }
 
