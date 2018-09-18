@@ -28,7 +28,7 @@ public class SensorListener extends IntentService implements SensorEventListener
     SharedPreferences stepsSP;
     SharedPreferences.Editor stepsSPEditor;
     private static boolean startFlag;
-
+    Database db;
 
 
     public SensorListener() {
@@ -46,7 +46,6 @@ public class SensorListener extends IntentService implements SensorEventListener
             yesterdaySteps = sinceBoot;
             steps = 0;
             Log.d("resetSteps", "i zresetowal" + yesterdaySteps);
-
         }
         else {
             Log.d("resetSteps", "nie zresetował" + yesterdaySteps);

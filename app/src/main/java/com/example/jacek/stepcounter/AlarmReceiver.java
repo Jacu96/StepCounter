@@ -9,11 +9,9 @@ import android.widget.Toast;
 
 public class AlarmReceiver extends BroadcastReceiver {
     private final String TAG = "AlarmReceiver";
-
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "ALARM RECEIVER-wywolanie");
-
         SensorListener.resetSteps();
     }
 }

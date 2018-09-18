@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         tv_steps = (TextView) findViewById(R.id.tv_steps);
@@ -76,6 +75,11 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         unregisterReceiver(updateView);
     }
+
+    public boolean putData2(int date, int steps){
+        database.putData(,this.steps)
+    }
+
 
     class UpdateView extends BroadcastReceiver {
         @Override
