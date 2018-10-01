@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.support.v7.app.AppCompatActivity;
@@ -22,32 +25,44 @@ public class MainActivity extends AppCompatActivity {
     UpdateView updateView;
     private TextView tv_steps;
     private TextView tv_info;
+    private Button historyButton;
     private ProgressBar progressBar;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        historyButton=(Button) findViewById(R.id.historyButton);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         tv_steps = (TextView) findViewById(R.id.tv_steps);
         tv_info = (TextView) findViewById(R.id.tv_info);
         tv_info.setText("Dzisiaj zrobiłeś już tyle kroków:");
-
-
         tv_steps.setText(steps + "");
 
         Intent sensorListenerIntent = new Intent(this, SensorListener.class);
         startService(sensorListenerIntent);
+
+        //lunching history activity
+        historyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(MainActivity.this, History.class);
+                //tak mozna cos przekazac do tego activity
+                //myIntent.putExtra("ID", steps);
+                /*MainActivity.this.*/startActivity(myIntent);
+            }
+        });
 
         IntentFilter filter = new IntentFilter();
 
         updateView = new UpdateView();
         filter.addAction(BROADCAST_ACTION);
         registerReceiver(updateView, filter);
-
-
     }
+
+
 
     @Override
     protected void onResume() {
@@ -74,10 +89,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(updateView);
-    }
-
-    public boolean putData2(int date, int steps){
-        database.putData(,this.steps)
     }
 
 

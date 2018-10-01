@@ -22,13 +22,14 @@ public class SensorListener extends IntentService implements SensorEventListener
     private final String TAG = "SensorListener";
     private static float steps;
     private static float yesterdaySteps;
-    private static float sinceBoot = 0;
+    private static float sinceBoot;
     private SensorManager sensorManager;
     private Calendar calendar = Calendar.getInstance();
-    SharedPreferences stepsSP;
-    SharedPreferences.Editor stepsSPEditor;
+    public SharedPreferences sinceBootStepsSP;
+    public SharedPreferences.Editor sinceBootStepsSPEditor;
+    public SharedPreferences yesterdayStepsSP;
+    public SharedPreferences.Editor yesterdayStepsSPEditor;
     private static boolean startFlag;
-    Database db;
 
 
     public SensorListener() {
@@ -40,20 +41,31 @@ public class SensorListener extends IntentService implements SensorEventListener
      * Służy do resetowania licznika kroków
      */
     public static void resetSteps() {
-        Log.d("resetSteps", "RESET KURWA"+yesterdaySteps);
+        Log.d("resetSteps", "RESET "+yesterdaySteps);
 
         if(startFlag) {
             yesterdaySteps = sinceBoot;
             steps = 0;
-            Log.d("resetSteps", "i zresetowal" + yesterdaySteps);
+            Log.d("resetSteps", "i zresetowal-YESTERDAY=" + yesterdaySteps);
+            Log.d("resetSteps", "Steps=" + steps);
+            Log.d("resetSteps", "SinceBoot=" + sinceBoot);
+
         }
         else {
-            Log.d("resetSteps", "nie zresetował" + yesterdaySteps);
+            Log.d("resetSteps", "nie zresetował-YESTERDAY=" + yesterdaySteps);
+            Log.d("resetSteps", "Steps=" + steps);
+            Log.d("resetSteps", "SinceBoot=" + sinceBoot);
             startFlag=true;
         }
 
 
     }
+    public static int getSteps(){
+        return (int) steps;
+    }
+
+
+
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
@@ -62,7 +74,6 @@ public class SensorListener extends IntentService implements SensorEventListener
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         return START_STICKY;
     }
 
@@ -84,13 +95,19 @@ public class SensorListener extends IntentService implements SensorEventListener
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 1);
-
         startFlag=false;
         startAlarm(calendar);
 
-        stepsSP=getSharedPreferences("com.example.jacek.stepcounter",Context.MODE_PRIVATE);
-        stepsSPEditor=stepsSP.edit();
-        yesterdaySteps=stepsSP.getFloat("yesterdaySteps",0);
+        yesterdayStepsSP=getSharedPreferences("com.example.jacek.stepcounter",Context.MODE_PRIVATE);
+        yesterdayStepsSPEditor=yesterdayStepsSP.edit();
+        sinceBootStepsSP=getSharedPreferences("com.example.jacek.stepcounter",Context.MODE_PRIVATE);
+        sinceBootStepsSPEditor=sinceBootStepsSP.edit();
+        sinceBoot=sinceBootStepsSP.getFloat("sinceBoot",0);
+        yesterdaySteps=yesterdayStepsSP.getFloat("yesterdaySteps",0);
+        Log.d("service-on create", "yesterdaySteps=" + yesterdaySteps);
+        Log.d("service-on create", "Steps=" + steps);
+        Log.d("service-on create", "SinceBoot=" + sinceBoot);
+
 
     }
 
@@ -101,11 +118,16 @@ public class SensorListener extends IntentService implements SensorEventListener
      */
     private void startAlarm(Calendar c) {
         Log.d(TAG, "start alarm"+yesterdaySteps);
+
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
         Intent intent = new Intent(this, AlarmReceiver.class);
+
         //Hipoteza: requestcode 1 to on prosi o wyslanie i moze w wolnej chwili wysle a 0 to ze wyslac i chuj
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY/(24*60*4), pendingIntent);
+
         Log.d(TAG, "start alarm"+yesterdaySteps);
 
 
@@ -119,16 +141,24 @@ public class SensorListener extends IntentService implements SensorEventListener
     @Override
     public void onSensorChanged(SensorEvent event) {
         sinceBoot = event.values[0];
-        steps = event.values[0] - yesterdaySteps;
-        Log.d(TAG, "yesterday="+yesterdaySteps);
+        steps = sinceBoot - yesterdaySteps;
+        //Log.d(TAG, "yesterday="+yesterdaySteps);
         Intent intent = new Intent();
         intent.setAction(MainActivity.BROADCAST_ACTION);
         intent.putExtra("data", steps);
         sendBroadcast(intent);
+        Log.d("ONSENSORCHANGED", "yesterdaySteps=" + yesterdaySteps);
+        Log.d("ONSENSORCHANGED", "Steps=" + steps);
+        Log.d("ONSENSORCHANGED", "SinceBoot=" + sinceBoot);
 
-    //pro restarcie appki nadal pamięta kroki dzięki temu shared prefereces
-        stepsSPEditor.putFloat("yesterdaySteps",yesterdaySteps);
-        stepsSPEditor.commit();
+
+
+        //pro restarcie appki nadal pamięta kroki dzięki temu shared prefereces
+        // bycmoze wystarczy to robic tylko w on destroy
+        yesterdayStepsSPEditor.putFloat("yesterdaySteps",yesterdaySteps);
+        yesterdayStepsSPEditor.commit();
+        sinceBootStepsSPEditor.putFloat("yesterdaySteps",yesterdaySteps);
+        sinceBootStepsSPEditor.commit();
 
     }
 
@@ -136,4 +166,11 @@ public class SensorListener extends IntentService implements SensorEventListener
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+    @Override
+    public void onDestroy (){
+        super.onDestroy();
+        /*yesterdayStepsSPEditor.putFloat("yesterdaySteps",yesterdaySteps);
+        yesterdayStepsSPEditor.commit();*/
+    }
+
 }

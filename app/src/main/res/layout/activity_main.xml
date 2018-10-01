@@ -36,11 +36,10 @@
             android:id="@+id/tv_steps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:text="0"
-            android:textSize="40dp"
             android:layout_gravity="center"
-             />
+            android:layout_weight="1"
+            android:text="0"
+            android:textSize="40dp" />
 
 
         <ProgressBar
@@ -52,6 +51,13 @@
             android:layout_weight="1"
             android:indeterminate="false"
             />
+
+        <Button
+            android:id="@+id/historyButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="History" />
 
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
