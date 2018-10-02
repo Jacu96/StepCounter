@@ -79,13 +79,13 @@ public class Database extends SQLiteOpenHelper {
         if (result == -1) return false;
         else return true;*/
         sqLiteDatabase.close();
-
     }
-    //TODO zrobic metode get ktore daja kroki z konkretnej id
+
     public int getSteps(int id){
         SQLiteDatabase sqLiteDatabase=this.getReadableDatabase();
         int steps;
-        Cursor c=sqLiteDatabase.rawQuery("SELECT "+STEPS+" FROM "+TABLE_NAME+" WHERE "+ID+" ="+id,null);
+        String sqlQuery="SELECT "+STEPS+" FROM "+TABLE_NAME+" WHERE "+ID+" ="+id;
+        Cursor c=sqLiteDatabase.rawQuery(sqlQuery,null);
         c.moveToFirst();
         steps=c.getInt(0);
         c.close();
@@ -96,7 +96,8 @@ public class Database extends SQLiteOpenHelper {
     public long getDate(int id){
         SQLiteDatabase sqLiteDatabase=this.getReadableDatabase();
         long date;
-        Cursor c=sqLiteDatabase.rawQuery("SELECT "+DATE+" FROM "+TABLE_NAME+" WHERE "+ID+" ="+id,null);
+        String sqlQuery="SELECT "+DATE+" FROM "+TABLE_NAME+" WHERE "+ID+" ="+id;
+        Cursor c=sqLiteDatabase.rawQuery(sqlQuery,null);
         c.moveToFirst();
         date=c.getLong(0);
         c.close();

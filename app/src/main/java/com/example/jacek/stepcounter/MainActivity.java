@@ -20,9 +20,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     public static final String BROADCAST_ACTION = "com.example.jacek.stepcounter";
-    static float steps = 0;
+    private static float steps = 0;
     private final String TAG = "MainActivity";
-    UpdateView updateView;
+    private UpdateView updateView;
     private TextView tv_steps;
     private TextView tv_info;
     private Button historyButton;
