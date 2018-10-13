@@ -38,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         tv_steps = (TextView) findViewById(R.id.tv_steps);
         tv_info = (TextView) findViewById(R.id.tv_info);
-        tv_info.setText("Dzisiaj zrobiłeś już tyle kroków:");
-        tv_steps.setText(steps + "");
+        //tv_info.setText("Dzisiaj zrobiłeś już tyle kroków:");
+        //tv_steps.setText(steps + "");
 
         Intent sensorListenerIntent = new Intent(this, SensorListener.class);
         startService(sensorListenerIntent);
@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         filter.addAction(BROADCAST_ACTION);
         registerReceiver(updateView, filter);
     }
-
 
 
     @Override
@@ -99,8 +98,10 @@ public class MainActivity extends AppCompatActivity {
             try {
                 //Ta linijka wyświetla na komputerze "UpdateView.onReceive() called"
                 Log.d(TAG, "UpdateView.onReceive() called");
-                steps = intent.getExtras().getFloat("data");
+                //steps = intent.getExtras().getFloat("data");
+                String gowno =intent.getExtras().getString("data");
                 tv_steps.setText("" + steps);
+                tv_steps.setText(gowno);
                 //Zakładamy 1000 kroków więc steps/10
                 progressBar.setProgress((int) steps / 10);
             } catch (Exception ex) {

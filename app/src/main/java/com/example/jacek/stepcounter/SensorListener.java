@@ -30,13 +30,17 @@ public class SensorListener extends IntentService implements SensorEventListener
     public SharedPreferences.Editor sinceBootStepsSPEditor;
     public SharedPreferences yesterdayStepsSP;
     public SharedPreferences.Editor yesterdayStepsSPEditor;
-    private static boolean startFlag;
+    private static boolean okToResetFlag;
+    private static boolean bootFlag=false;
+    
 
 
     public SensorListener() {
         super("test-service");
     }
-
+    public static void setBootFlag(){
+        bootFlag=true;
+    }
     /**
      * Metoda jest wywoływana przez AlarmReceiver
      * Służy do resetowania licznika kroków
@@ -44,7 +48,7 @@ public class SensorListener extends IntentService implements SensorEventListener
     public static void resetSteps() {
         Log.d("SensorListener.restetS", "RESET "+yesterdaySteps);
 
-        if(startFlag) {
+        if(okToResetFlag) {
             yesterdaySteps = sinceBoot;
             steps = 0;
             Log.d("SensorListener.restetS", "i zresetowal-YESTERDAY=" + yesterdaySteps);
@@ -56,7 +60,7 @@ public class SensorListener extends IntentService implements SensorEventListener
             Log.d("SensorListener.restetS", "nie zresetował-YESTERDAY=" + yesterdaySteps);
             Log.d("SensorListener.restetS", "Steps=" + steps);
             Log.d("SensorListener.restetS", "SinceBoot=" + sinceBoot);
-            startFlag=true;
+            okToResetFlag=true;
         }
 
 
@@ -91,18 +95,38 @@ public class SensorListener extends IntentService implements SensorEventListener
         } else {
             Toast.makeText(this, "Sensor not found", Toast.LENGTH_SHORT).show();
         }
+        Intent intent = new Intent();
+        intent.setAction(MainActivity.BROADCAST_ACTION);
+        intent.putExtra("data", "nie bylo resetu");
+        sendBroadcast(intent);
 
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 1);
-        startFlag=false;
+        okToResetFlag=false;
         startAlarm(calendar);
 
         yesterdayStepsSP=getSharedPreferences("com.example.jacek.stepcounter",Context.MODE_PRIVATE);
         yesterdayStepsSPEditor=yesterdayStepsSP.edit();
         sinceBootStepsSP=getSharedPreferences("com.example.jacek.stepcounter",Context.MODE_PRIVATE);
         sinceBootStepsSPEditor=sinceBootStepsSP.edit();
+        if(bootFlag){
+            int i=0;//TODO zrobic tu normalne zbieranie krokow
+            Database db=Database.getInstance(this);
+            yesterdaySteps=(float) -db.getSteps(i);
+            //pewnie potem on wczyta zle z shared preferences wiec bedzie trzeba zrobic
+            //yesterdayStepsSPEditor.putFloat("yesterdaySteps",yesterdaySteps);
+            //yesterdayStepsSPEditor.commit();
+            Log.d(TAG,"(poresetowe)yesterdaySteps="+yesterdaySteps);
+            Toast.makeText(this, "ZADZIALAL czujnik resetu", Toast.LENGTH_LONG).show();
+            Intent intent2 = new Intent();
+            intent2.setAction(MainActivity.BROADCAST_ACTION);
+            intent2.putExtra("data", "byl reset");
+            sendBroadcast(intent);
+
+        }
+
         sinceBoot=sinceBootStepsSP.getFloat("sinceBoot",0);
         yesterdaySteps=yesterdayStepsSP.getFloat("yesterdaySteps",0);
         Log.d(TAG+".onCreate", "yesterdaySteps=" + yesterdaySteps);
