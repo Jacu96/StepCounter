@@ -81,7 +81,7 @@ public class Database extends SQLiteOpenHelper {
         sqLiteDatabase.close();
     }
 
-    public int getSteps(int id){
+    public int getSteps(long id){
         SQLiteDatabase sqLiteDatabase=this.getReadableDatabase();
         int steps;
         String sqlQuery="SELECT "+STEPS+" FROM "+TABLE_NAME+" WHERE "+ID+" ="+id;
@@ -93,7 +93,7 @@ public class Database extends SQLiteOpenHelper {
         return steps;
     }
 
-    public long getDate(int id){
+    public long getDate(long id){
         SQLiteDatabase sqLiteDatabase=this.getReadableDatabase();
         long date;
         String sqlQuery="SELECT "+DATE+" FROM "+TABLE_NAME+" WHERE "+ID+" ="+id;
@@ -104,6 +104,20 @@ public class Database extends SQLiteOpenHelper {
         sqLiteDatabase.close();
         return date;
     }
+
+    public long getLastID(){
+        SQLiteDatabase sqLiteDatabase=this.getReadableDatabase();
+        long lastId;
+        String sqlQuery = "SELECT "+ID+" from "+TABLE_NAME+" order by "+ID+" DESC limit 1";
+        Cursor c = sqLiteDatabase.rawQuery (sqlQuery,null);
+        c.moveToFirst();
+        lastId = c.getLong(0);
+        c.close();
+        sqLiteDatabase.close();
+        Log.d("DATABASE ID", "ID=" + lastId);
+        return lastId;
+    }
+
 
 
 

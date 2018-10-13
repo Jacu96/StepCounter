@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 //Ta linijka wyświetla na komputerze "UpdateView.onReceive() called"
                 Log.d(TAG, "UpdateView.onReceive() called");
                 //steps = intent.getExtras().getFloat("data");
+                //to cos jest tu zeby zobaczyc czy flaga bootUpu dziala
                 String gowno =intent.getExtras().getString("data");
                 tv_steps.setText("" + steps);
                 tv_steps.setText(gowno);

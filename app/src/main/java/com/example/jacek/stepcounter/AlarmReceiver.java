@@ -32,8 +32,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG+".onReceive", "ALARM RECEIVER-wywolanie");
-        //zalozmy ze to dziala
+        Log.d(TAG, "ALARM RECEIVER-wywolanie");
+        //wprowadzamy do bazy danych liczbe krokow i date kiedy zostaly one zrobione
 
         Database db=Database.getInstance(context);
         db.putData(System.currentTimeMillis(),SensorListener.getSteps());

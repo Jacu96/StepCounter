@@ -115,6 +115,7 @@ public class SensorListener extends IntentService implements SensorEventListener
             int i=0;//TODO zrobic tu normalne zbieranie krokow
             Database db=Database.getInstance(this);
             yesterdaySteps=(float) -db.getSteps(i);
+            db.close();
             //pewnie potem on wczyta zle z shared preferences wiec bedzie trzeba zrobic
             //yesterdayStepsSPEditor.putFloat("yesterdaySteps",yesterdaySteps);
             //yesterdayStepsSPEditor.commit();
@@ -182,7 +183,7 @@ public class SensorListener extends IntentService implements SensorEventListener
         // bycmoze wystarczy to robic tylko w on destroy
         yesterdayStepsSPEditor.putFloat("yesterdaySteps",yesterdaySteps);
         yesterdayStepsSPEditor.commit();
-        sinceBootStepsSPEditor.putFloat("yesterdaySteps",yesterdaySteps);
+        sinceBootStepsSPEditor.putFloat("sinceBoot",sinceBoot);
         sinceBootStepsSPEditor.commit();
 
     }
@@ -194,8 +195,10 @@ public class SensorListener extends IntentService implements SensorEventListener
     @Override
     public void onDestroy (){
         super.onDestroy();
-        /*yesterdayStepsSPEditor.putFloat("yesterdaySteps",yesterdaySteps);
-        yesterdayStepsSPEditor.commit();*/
+        yesterdayStepsSPEditor.putFloat("yesterdaySteps",yesterdaySteps);
+        yesterdayStepsSPEditor.commit();
+        sinceBootStepsSPEditor.putFloat("sinceBoot",sinceBoot);
+        sinceBootStepsSPEditor.commit();
     }
 
 }

@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import java.util.Calendar;
 import android.content.Context;
+import android.widget.Toast;
+
 import java.util.Calendar;
 
 public class History extends AppCompatActivity {
@@ -20,7 +22,8 @@ public class History extends AppCompatActivity {
     private Calendar calendar=Calendar.getInstance();
     private Context context=this;
     private int steps;
-    int i=1;
+    long recordId;
+    long maxId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +34,24 @@ public class History extends AppCompatActivity {
         backButton=(Button) findViewById(R.id.backButton);
         tv_steps = (TextView) findViewById(R.id.tv_steps);
         tv_label = (TextView) findViewById(R.id.tv_label);
-        //TODO wstawic zamiast slowa date brana z bazy danych
-        tv_label.setText("(DATA):");
 
-        tv_steps.setText("steps");
+        Database db=Database.getInstance(context);
+        maxId=db.getLastID();
+        recordId=maxId;
+
+        steps = db.getSteps(recordId);
+        calendar.setTimeInMillis(db.getDate(recordId));
+
+        tv_steps.setText(steps+"");
+        tv_label.setText(calendar.get(Calendar.DAY_OF_MONTH)+"."+
+                calendar.get(Calendar.MONTH)+"."+
+                calendar.get(Calendar.YEAR)+" H:"+
+                calendar.get(Calendar.HOUR_OF_DAY)+" M:"+
+                calendar.get(Calendar.MINUTE)+" S:"+
+                calendar.get(Calendar.SECOND));
+
+        db.close();
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -45,35 +62,50 @@ public class History extends AppCompatActivity {
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Database db=Database.getInstance(context);
 
-                steps=db.getSteps(i);//ToDo liczba ktokow z bazy danych
-                calendar.setTimeInMillis(db.getDate(i));
+                Database db=Database.getInstance(context);
+                recordId--;
+                if(recordId<=maxId && recordId>0) {
+                    steps = db.getSteps(recordId);
+                    calendar.setTimeInMillis(db.getDate(recordId));
+                }
+                else {
+                    recordId++;
+                    Toast.makeText(context,"No data from this day", Toast.LENGTH_SHORT).show();
+                }
                 tv_label.setText(calendar.get(Calendar.DAY_OF_MONTH)+"."+
                         calendar.get(Calendar.MONTH)+"."+
                         calendar.get(Calendar.YEAR)+" H:"+
                         calendar.get(Calendar.HOUR_OF_DAY)+" M:"+
                         calendar.get(Calendar.MINUTE)+" S:"+
                         calendar.get(Calendar.SECOND));
-                i--;
-                tv_steps.setText("steps");
+                tv_steps.setText(steps+"");
+                db.close();
+
             }
         });
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Database db=Database.getInstance(context);
-
-                steps=db.getSteps(i);//ToDo liczba ktokow z bazy danych
-                calendar.setTimeInMillis(0/*TODO warosc z bazy danych*/);
+                recordId++;
+                if(recordId<=maxId && recordId>0) {
+                    steps = db.getSteps(recordId);
+                    calendar.setTimeInMillis(db.getDate(recordId));
+                }
+                else {
+                    recordId--;
+                    Toast.makeText(context,"No data from this day", Toast.LENGTH_SHORT).show();
+                }
                 tv_label.setText(calendar.get(Calendar.DAY_OF_MONTH)+"."+
                                 calendar.get(Calendar.MONTH)+"."+
                                 calendar.get(Calendar.YEAR)+" H:"+
                                 calendar.get(Calendar.HOUR_OF_DAY)+" M:"+
                                 calendar.get(Calendar.MINUTE)+" S:"+
                                 calendar.get(Calendar.SECOND));
-                i++;
                 tv_steps.setText(steps+"");
+                db.close();
+
             }
         });
 
