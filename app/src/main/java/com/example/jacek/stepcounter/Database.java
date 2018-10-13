@@ -12,7 +12,7 @@ import android.util.Log;
 
 public class Database extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "History.db";
-    private final String TAG = "DATABASE";
+    private final String TAG = "Database";
     public static final String TABLE_NAME = "History";
     public static final String ID = "ID";
     public static final String DATE = "Date";
@@ -44,7 +44,7 @@ public class Database extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("CREATE TABLE " + TABLE_NAME + " (" + ID +
         " INTEGER PRIMARY KEY AUTOINCREMENT," + DATE + " INTEGER, " + STEPS + " INTEGER )");
-        Log.d(TAG, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXonCreate");
+        Log.d(TAG+".onCreate", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXonCreate");
     }
 
     /*@Override

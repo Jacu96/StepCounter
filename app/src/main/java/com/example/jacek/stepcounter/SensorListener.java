@@ -7,6 +7,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.nfc.Tag;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -41,20 +42,20 @@ public class SensorListener extends IntentService implements SensorEventListener
      * Służy do resetowania licznika kroków
      */
     public static void resetSteps() {
-        Log.d("resetSteps", "RESET "+yesterdaySteps);
+        Log.d("SensorListener.restetS", "RESET "+yesterdaySteps);
 
         if(startFlag) {
             yesterdaySteps = sinceBoot;
             steps = 0;
-            Log.d("resetSteps", "i zresetowal-YESTERDAY=" + yesterdaySteps);
-            Log.d("resetSteps", "Steps=" + steps);
-            Log.d("resetSteps", "SinceBoot=" + sinceBoot);
+            Log.d("SensorListener.restetS", "i zresetowal-YESTERDAY=" + yesterdaySteps);
+            Log.d("SensorListener.restetS", "Steps=" + steps);
+            Log.d("SensorListener.restetS", "SinceBoot=" + sinceBoot);
 
         }
         else {
-            Log.d("resetSteps", "nie zresetował-YESTERDAY=" + yesterdaySteps);
-            Log.d("resetSteps", "Steps=" + steps);
-            Log.d("resetSteps", "SinceBoot=" + sinceBoot);
+            Log.d("SensorListener.restetS", "nie zresetował-YESTERDAY=" + yesterdaySteps);
+            Log.d("SensorListener.restetS", "Steps=" + steps);
+            Log.d("SensorListener.restetS", "SinceBoot=" + sinceBoot);
             startFlag=true;
         }
 
@@ -104,9 +105,9 @@ public class SensorListener extends IntentService implements SensorEventListener
         sinceBootStepsSPEditor=sinceBootStepsSP.edit();
         sinceBoot=sinceBootStepsSP.getFloat("sinceBoot",0);
         yesterdaySteps=yesterdayStepsSP.getFloat("yesterdaySteps",0);
-        Log.d("service-on create", "yesterdaySteps=" + yesterdaySteps);
-        Log.d("service-on create", "Steps=" + steps);
-        Log.d("service-on create", "SinceBoot=" + sinceBoot);
+        Log.d(TAG+".onCreate", "yesterdaySteps=" + yesterdaySteps);
+        Log.d(TAG+".onCreate", "Steps=" + steps);
+        Log.d(TAG+".onCreate", "SinceBoot=" + sinceBoot);
 
 
     }
@@ -117,7 +118,7 @@ public class SensorListener extends IntentService implements SensorEventListener
      * @param c
      */
     private void startAlarm(Calendar c) {
-        Log.d(TAG, "start alarm"+yesterdaySteps);
+        Log.d(TAG+".startAlr", "start alarm"+yesterdaySteps);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 

@@ -1,7 +1,9 @@
 package com.example.jacek.stepcounter;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,6 +16,7 @@ public class History extends AppCompatActivity {
     private TextView tv_steps;
     private Button previousButton;
     private Button nextButton;
+    private Button backButton;
     private Calendar calendar=Calendar.getInstance();
     private Context context=this;
     private int steps;
@@ -25,13 +28,20 @@ public class History extends AppCompatActivity {
         setContentView(R.layout.activity_history);
         previousButton=(Button) findViewById(R.id.previousButton);
         nextButton=(Button) findViewById(R.id.nextButton);
+        backButton=(Button) findViewById(R.id.backButton);
         tv_steps = (TextView) findViewById(R.id.tv_steps);
         tv_label = (TextView) findViewById(R.id.tv_label);
         //TODO wstawic zamiast slowa date brana z bazy danych
         tv_label.setText("(DATA):");
 
         tv_steps.setText("steps");
-
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("History.backButton ", "Button pressed");
+                finish();
+            }
+        });
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

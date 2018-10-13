@@ -32,7 +32,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "ALARM RECEIVER-wywolanie");
+        Log.d(TAG+".onReceive", "ALARM RECEIVER-wywolanie");
         //zalozmy ze to dziala
 
         Database db=Database.getInstance(context);
