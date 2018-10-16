@@ -73,12 +73,7 @@ public class History extends AppCompatActivity {
                     recordId++;
                     Toast.makeText(context,"No data from this day", Toast.LENGTH_SHORT).show();
                 }
-                tv_label.setText(calendar.get(Calendar.DAY_OF_MONTH)+"."+
-                        calendar.get(Calendar.MONTH)+"."+
-                        calendar.get(Calendar.YEAR)+" H:"+
-                        calendar.get(Calendar.HOUR_OF_DAY)+" M:"+
-                        calendar.get(Calendar.MINUTE)+" S:"+
-                        calendar.get(Calendar.SECOND));
+                tv_label.setText(getHistoryLabel(calendar));
                 tv_steps.setText(steps+"");
                 db.close();
 
@@ -97,12 +92,7 @@ public class History extends AppCompatActivity {
                     recordId--;
                     Toast.makeText(context,"No data from this day", Toast.LENGTH_SHORT).show();
                 }
-                tv_label.setText(calendar.get(Calendar.DAY_OF_MONTH)+"."+
-                                calendar.get(Calendar.MONTH)+"."+
-                                calendar.get(Calendar.YEAR)+" H:"+
-                                calendar.get(Calendar.HOUR_OF_DAY)+" M:"+
-                                calendar.get(Calendar.MINUTE)+" S:"+
-                                calendar.get(Calendar.SECOND));
+                tv_label.setText(getHistoryLabel(calendar));
                 tv_steps.setText(steps+"");
                 db.close();
 
@@ -110,4 +100,15 @@ public class History extends AppCompatActivity {
         });
 
     }
+    private String getHistoryLabel(Calendar calendar){
+        String time;
+            time=calendar.get(Calendar.DAY_OF_MONTH)+"."+ 
+                 calendar.get(Calendar.MONTH)+"."+
+                 calendar.get(Calendar.YEAR)+" H:"+
+                 calendar.get(Calendar.HOUR_OF_DAY)+" M:"+
+                 calendar.get(Calendar.MINUTE)+" S:"+
+                 calendar.get(Calendar.SECOND);
+            return time;
+    }
+    
 }

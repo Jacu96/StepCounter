@@ -98,11 +98,11 @@ public class MainActivity extends AppCompatActivity {
             try {
                 //Ta linijka wyświetla na komputerze "UpdateView.onReceive() called"
                 Log.d(TAG, "UpdateView.onReceive() called");
-                //steps = intent.getExtras().getFloat("data");
+                steps = intent.getExtras().getFloat("data");
                 //to cos jest tu zeby zobaczyc czy flaga bootUpu dziala
-                String gowno =intent.getExtras().getString("data");
+                //String gowno =intent.getExtras().getString("data");
+                //tv_steps.setText(gowno);
                 tv_steps.setText("" + steps);
-                tv_steps.setText(gowno);
                 //Zakładamy 1000 kroków więc steps/10
                 progressBar.setProgress((int) steps / 10);
             } catch (Exception ex) {

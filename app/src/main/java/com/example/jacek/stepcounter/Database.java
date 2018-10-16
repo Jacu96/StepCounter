@@ -17,7 +17,7 @@ public class Database extends SQLiteOpenHelper {
     public static final String ID = "ID";
     public static final String DATE = "Date";
     public static final String STEPS = "Steps";
-    private static final AtomicInteger openCounter = new AtomicInteger();
+    //private static final AtomicInteger openCounter = new AtomicInteger();
     private static Database instance;
 
 
@@ -52,7 +52,7 @@ public class Database extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(sqLiteDatabase);
     }*/
-
+    //todo zamienic na cos co czaje
     @Override
     public void onUpgrade(final SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion == 1) {
@@ -117,6 +117,7 @@ public class Database extends SQLiteOpenHelper {
         Log.d("DATABASE ID", "ID=" + lastId);
         return lastId;
     }
+    //todo edytowanie rekordu
 
 
 
