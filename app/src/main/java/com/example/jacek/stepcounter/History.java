@@ -1,6 +1,5 @@
 package com.example.jacek.stepcounter;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +10,6 @@ import java.util.Calendar;
 import android.content.Context;
 import android.widget.Toast;
 
-import java.util.Calendar;
 
 public class History extends AppCompatActivity {
     private TextView tv_label;
@@ -24,7 +22,7 @@ public class History extends AppCompatActivity {
     private int steps;
     long recordId;
     long maxId;
-
+//todo moze flag startu zeby przy zainstalowaniu albo resecie sie to nie dzialo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,19 +36,21 @@ public class History extends AppCompatActivity {
         Database db=Database.getInstance(context);
         maxId=db.getLastID();
         recordId=maxId;
+        Log.d("history database line", ""+recordId);
 
-        steps = db.getSteps(recordId);
-        calendar.setTimeInMillis(db.getDate(recordId));
+
+        if(recordId<=maxId && recordId>0) {
+            steps = db.getSteps(recordId);
+            calendar.setTimeInMillis(db.getDate(recordId));
+        }
+        else {
+            Toast.makeText(context,"No data from this day", Toast.LENGTH_SHORT).show();
+        }
+        db.close();
 
         tv_steps.setText(steps+"");
-        tv_label.setText(calendar.get(Calendar.DAY_OF_MONTH)+"."+
-                calendar.get(Calendar.MONTH)+"."+
-                calendar.get(Calendar.YEAR)+" H:"+
-                calendar.get(Calendar.HOUR_OF_DAY)+" M:"+
-                calendar.get(Calendar.MINUTE)+" S:"+
-                calendar.get(Calendar.SECOND));
+        tv_label.setText(getHistoryLabel(calendar));
 
-        db.close();
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override

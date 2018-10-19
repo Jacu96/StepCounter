@@ -102,10 +102,10 @@ public class SensorListener extends IntentService implements SensorEventListener
         StepsPrefsEditor = StepsPrefs.edit();
 
         if (bootFlag) {
-            Database db = Database.getInstance(this);
-            long i = db.getLastID();
-            yesterdaySteps = StepsPrefs.getFloat("yesterdaySteps", 0)-StepsPrefs.getFloat("sinceBoot", 0);;
-            db.close();
+            //Database db = Database.getInstance(this);
+            //long i = db.getLastID();
+            yesterdaySteps = StepsPrefs.getFloat("yesterdaySteps", 0)-StepsPrefs.getFloat("sinceBoot", 0);
+            //db.close();
             //pewnie potem on wczyta zle z shared preferences wiec bedzie trzeba zrobic
             StepsPrefsEditor.putFloat("yesterdaySteps", yesterdaySteps);
             StepsPrefsEditor.putFloat("sinceBoot", 0);
@@ -122,15 +122,7 @@ public class SensorListener extends IntentService implements SensorEventListener
         
         steps = sinceBoot - yesterdaySteps;
         sendFloatToMainActivity(steps);
-        Intent stepsCurrentValueIntent = new Intent();
-        stepsCurrentValueIntent.setAction(MainActivity.BROADCAST_ACTION);
-        stepsCurrentValueIntent.putExtra("data", sinceBoot - yesterdaySteps);
-        sendBroadcast(stepsCurrentValueIntent);
 
-
-        Log.d(TAG + ".onCreate", "yesterdaySteps=" + yesterdaySteps);
-        Log.d(TAG + ".onCreate", "Steps=" + steps);
-        Log.d(TAG + ".onCreate", "SinceBoot=" + sinceBoot);
 
     }
 
@@ -140,7 +132,7 @@ public class SensorListener extends IntentService implements SensorEventListener
      * @param c
      */
     private void startAlarm(Calendar c) {
-
+        //todo po 1, czy to powinno byc tu, po 2 zmienic set repeating na zwykly
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = new Intent(this, AlarmReceiver.class);
@@ -162,16 +154,7 @@ public class SensorListener extends IntentService implements SensorEventListener
     public void onSensorChanged(SensorEvent event) {
         sinceBoot = event.values[0];
         steps = sinceBoot - yesterdaySteps;
-        /*Intent intent = new Intent();
-        intent.setAction(MainActivity.BROADCAST_ACTION);
-        intent.putExtra("data", steps);
-        sendBroadcast(intent);*/
-        //zastapimy metoda sendFloatToMainActivity
         sendFloatToMainActivity(steps);
-        Log.d("ONSENSORCHANGED", "yesterdaySteps=" + yesterdaySteps);
-        Log.d("ONSENSORCHANGED", "Steps=" + steps);
-        Log.d("ONSENSORCHANGED", "SinceBoot=" + sinceBoot);
-
 
         //pro restarcie appki nadal pamięta kroki dzięki temu shared prefereces
         // bycmoze wystarczy to robic tylko w on destroy

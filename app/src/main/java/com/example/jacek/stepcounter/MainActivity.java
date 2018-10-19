@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -51,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent myIntent = new Intent(MainActivity.this, History.class);
                 //tak mozna cos przekazac do tego activity
                 //myIntent.putExtra("ID", steps);
-                /*MainActivity.this.*/startActivity(myIntent);
+                startActivity(myIntent);
             }
         });
 

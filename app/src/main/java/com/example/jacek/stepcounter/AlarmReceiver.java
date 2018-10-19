@@ -42,9 +42,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         SensorListener.resetSteps();
 
 
-        //stepsSP=getSharedPreferences("com.example.jacek.stepcounter",Context.MODE_PRIVATE);
-        //stepsSPEditor=stepsSP.edit();
-        //yesterdaySteps=stepsSP.getFloat("yesterdaySteps",0);
+
 
 
 
