@@ -1,5 +1,6 @@
 package com.example.jacek.stepcounter;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,7 @@ import java.util.Calendar;
 import android.content.Context;
 import android.widget.Toast;
 
+import java.util.Calendar;
 
 public class History extends AppCompatActivity {
     private TextView tv_label;
@@ -20,9 +22,11 @@ public class History extends AppCompatActivity {
     private Calendar calendar=Calendar.getInstance();
     private Context context=this;
     private int steps;
-    long recordId;
-    long maxId;
-//todo moze flag startu zeby przy zainstalowaniu albo resecie sie to nie dzialo
+    private long recordId;
+    private long maxId;
+    private static final long previousDay=-1;
+    private static final long nextDay=1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,33 +40,26 @@ public class History extends AppCompatActivity {
         Database db=Database.getInstance(context);
         maxId=db.getLastID();
         recordId=maxId;
-        Log.d("history database line", ""+recordId);
 
-
-        if(recordId<=maxId && recordId>0) {
-            steps = db.getSteps(recordId);
-            calendar.setTimeInMillis(db.getDate(recordId));
-        }
-        else {
-            Toast.makeText(context,"No data from this day", Toast.LENGTH_SHORT).show();
-        }
+        steps = db.getSteps(recordId);
+        calendar.setTimeInMillis(db.getDate(recordId));
         db.close();
 
         tv_steps.setText(steps+"");
-        tv_label.setText(getHistoryLabel(calendar));
+        tv_label.setText(getTimeLabel(calendar));
 
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("History.backButton ", "Button pressed");
                 finish();
             }
         });
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                showHistoricalStepValue(previousDay);
+                /*
                 Database db=Database.getInstance(context);
                 recordId--;
                 if(recordId<=maxId && recordId>0) {
@@ -73,15 +70,18 @@ public class History extends AppCompatActivity {
                     recordId++;
                     Toast.makeText(context,"No data from this day", Toast.LENGTH_SHORT).show();
                 }
-                tv_label.setText(getHistoryLabel(calendar));
+                tv_label.setText(getTimeLabel(calendar));
                 tv_steps.setText(steps+"");
-                db.close();
+                db.close();*/
 
             }
         });
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                showHistoricalStepValue(nextDay);
+
+                /*
                 Database db=Database.getInstance(context);
                 recordId++;
                 if(recordId<=maxId && recordId>0) {
@@ -92,15 +92,15 @@ public class History extends AppCompatActivity {
                     recordId--;
                     Toast.makeText(context,"No data from this day", Toast.LENGTH_SHORT).show();
                 }
-                tv_label.setText(getHistoryLabel(calendar));
+                tv_label.setText(getTimeLabel(calendar));
                 tv_steps.setText(steps+"");
                 db.close();
-
+                */
             }
         });
 
     }
-    private String getHistoryLabel(Calendar calendar){
+    private String getTimeLabel(Calendar calendar){
         String time;
             time=calendar.get(Calendar.DAY_OF_MONTH)+"."+ 
                  calendar.get(Calendar.MONTH)+"."+
@@ -110,5 +110,19 @@ public class History extends AppCompatActivity {
                  calendar.get(Calendar.SECOND);
             return time;
     }
-    
+    private void showHistoricalStepValue(long nextOrPreviousDay){
+        recordId+=nextOrPreviousDay;
+        if(recordId<=maxId && recordId>0) {
+            Database db=Database.getInstance(context);
+            steps = db.getSteps(recordId);
+            calendar.setTimeInMillis(db.getDate(recordId));
+            db.close();
+        }
+        else {
+            recordId-=nextOrPreviousDay;
+            Toast.makeText(context,"No data from this day", Toast.LENGTH_SHORT).show();
+        }
+        tv_label.setText(getTimeLabel(calendar));
+        tv_steps.setText(steps+"");
+    }
 }
