@@ -26,24 +26,16 @@ import java.util.Calendar;
 
 public class AlarmReceiver extends BroadcastReceiver {
     private final String TAG = "AlarmReceiver";
-    private SharedPreferences.Editor stepsSPEditor;
-
 
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "ALARM RECEIVER-wywolanie");
         //wprowadzamy do bazy danych liczbe krokow i date kiedy zostaly one zrobione
-
-        Database db=Database.getInstance(context);
-        db.putData(System.currentTimeMillis(),SensorListener.getSteps());
-        db.close();
-
-        SensorListener.resetSteps();
-
-
-
-
+        //nowe podejscie
+        NewDayService.setOkToResetFlag();
+        Intent newDayServiceIntent = new Intent(context, NewDayService.class);
+        context.startService(newDayServiceIntent);
 
 
     }

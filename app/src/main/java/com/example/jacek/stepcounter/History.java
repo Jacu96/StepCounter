@@ -39,15 +39,17 @@ public class History extends AppCompatActivity {
 
         Database db=Database.getInstance(context);
         maxId=db.getLastID();
-        recordId=maxId;
+        if(maxId>0) {
+            recordId = maxId;
 
-        steps = db.getSteps(recordId);
-        calendar.setTimeInMillis(db.getDate(recordId));
-        db.close();
+            steps = db.getSteps(recordId);
+            calendar.setTimeInMillis(db.getDate(recordId));
+            db.close();
 
-        tv_steps.setText(steps+"");
-        tv_label.setText(getTimeLabel(calendar));
-
+            tv_steps.setText(steps + "");
+            tv_label.setText(getTimeLabel(calendar));
+        }
+        else db.close();
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,20 +61,6 @@ public class History extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 showHistoricalStepValue(previousDay);
-                /*
-                Database db=Database.getInstance(context);
-                recordId--;
-                if(recordId<=maxId && recordId>0) {
-                    steps = db.getSteps(recordId);
-                    calendar.setTimeInMillis(db.getDate(recordId));
-                }
-                else {
-                    recordId++;
-                    Toast.makeText(context,"No data from this day", Toast.LENGTH_SHORT).show();
-                }
-                tv_label.setText(getTimeLabel(calendar));
-                tv_steps.setText(steps+"");
-                db.close();*/
 
             }
         });
@@ -80,22 +68,6 @@ public class History extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 showHistoricalStepValue(nextDay);
-
-                /*
-                Database db=Database.getInstance(context);
-                recordId++;
-                if(recordId<=maxId && recordId>0) {
-                    steps = db.getSteps(recordId);
-                    calendar.setTimeInMillis(db.getDate(recordId));
-                }
-                else {
-                    recordId--;
-                    Toast.makeText(context,"No data from this day", Toast.LENGTH_SHORT).show();
-                }
-                tv_label.setText(getTimeLabel(calendar));
-                tv_steps.setText(steps+"");
-                db.close();
-                */
             }
         });
 

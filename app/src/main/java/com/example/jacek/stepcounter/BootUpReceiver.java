@@ -12,7 +12,9 @@ public class BootUpReceiver extends BroadcastReceiver {
             SensorListener.setBootFlag();
 
             Intent sensorListenerIntent = new Intent(context, SensorListener.class);
+            Intent newDayServiceIntent= new Intent(context,NewDayService.class);
             context.startService(sensorListenerIntent);
+            context.startService(newDayServiceIntent);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.jacek.stepcounter;
 
 
+import android.app.IntentService;
 import android.content.Context;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
@@ -26,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv_info;
     private Button historyButton;
     private ProgressBar progressBar;
+    //todo test
+    public static String testowano_Alarm;
 
 
 
@@ -37,11 +40,14 @@ public class MainActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         tv_steps = (TextView) findViewById(R.id.tv_steps);
         tv_info = (TextView) findViewById(R.id.tv_info);
+
         //tv_info.setText("Dzisiaj zrobiłeś już tyle kroków:");
         //tv_steps.setText(steps + "");
 
         Intent sensorListenerIntent = new Intent(this, SensorListener.class);
+        Intent newDayServiceIntent= new Intent(this, NewDayService.class);
         startService(sensorListenerIntent);
+        startService(newDayServiceIntent);
 
         //lunching history activity
         historyButton.setOnClickListener(new View.OnClickListener() {
@@ -53,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(myIntent);
             }
         });
+
+
+
 
         IntentFilter filter = new IntentFilter();
 

@@ -9,6 +9,8 @@ import android.content.Context;
 import java.util.concurrent.atomic.AtomicInteger;
 import android.util.Log;
 
+import static java.sql.Types.NULL;
+
 
 public class Database extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "History.db";
@@ -44,15 +46,15 @@ public class Database extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("CREATE TABLE " + TABLE_NAME + " (" + ID +
         " INTEGER PRIMARY KEY AUTOINCREMENT," + DATE + " INTEGER, " + STEPS + " INTEGER )");
-        Log.d(TAG+".onCreate", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXonCreate");
+        Log.d(TAG+".onCreate", "Database created");
     }
 
+    //todo zamienic na cos co czaje
     /*@Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(sqLiteDatabase);
     }*/
-    //todo zamienic na cos co czaje
     @Override
     public void onUpgrade(final SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion == 1) {
@@ -71,13 +73,6 @@ public class Database extends SQLiteOpenHelper {
         contentValues.put(DATE, date);
         contentValues.put(STEPS, steps);
         sqLiteDatabase.insert(TABLE_NAME,null,contentValues);
-
-        //nie wiadomo czy caly ten long nie jest zbedny
-        /*
-        long result = sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
-
-        if (result == -1) return false;
-        else return true;*/
         sqLiteDatabase.close();
     }
 
@@ -108,16 +103,14 @@ public class Database extends SQLiteOpenHelper {
     public long getLastID(){
         SQLiteDatabase sqLiteDatabase=this.getReadableDatabase();
         long lastId;
-        String sqlQuery = "SELECT "+ID+" from "+TABLE_NAME+" order by "+ID+" DESC limit 1";
-        Cursor c = sqLiteDatabase.rawQuery (sqlQuery,null);
+        String sqlQuery2="SELECT count(*) FROM "+TABLE_NAME;
+        Cursor c = sqLiteDatabase.rawQuery (sqlQuery2,null);
         c.moveToFirst();
         lastId = c.getLong(0);
         c.close();
         sqLiteDatabase.close();
-        Log.d("DATABASE ID", "ID=" + lastId);
         return lastId;
     }
-    //todo edytowanie rekordu
 
 
 

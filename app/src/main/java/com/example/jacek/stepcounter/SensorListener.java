@@ -23,9 +23,7 @@ public class SensorListener extends IntentService implements SensorEventListener
     private static float steps;
     private static float yesterdaySteps;
     private static float sinceBoot;
-    private static boolean okToResetFlag;
     private static boolean bootFlag = false;
-    private final String TAG = "SensorListener";
     public SharedPreferences StepsPrefs;
     public SharedPreferences.Editor StepsPrefsEditor;
     private SensorManager sensorManager;
@@ -47,19 +45,11 @@ public class SensorListener extends IntentService implements SensorEventListener
     public static void resetSteps() {
         Log.d("SensorListener.restetS", "RESET " + yesterdaySteps);
 
-        if (okToResetFlag) {
             yesterdaySteps = sinceBoot;
             steps = 0;
             Log.d("SensorListener.restetS", "i zresetowal-YESTERDAY=" + yesterdaySteps);
             Log.d("SensorListener.restetS", "Steps=" + steps);
             Log.d("SensorListener.restetS", "SinceBoot=" + sinceBoot);
-
-        } else {
-            Log.d("SensorListener.restetS", "nie zresetował-YESTERDAY=" + yesterdaySteps);
-            Log.d("SensorListener.restetS", "Steps=" + steps);
-            Log.d("SensorListener.restetS", "SinceBoot=" + sinceBoot);
-            okToResetFlag = true;
-        }
     }
 
     public static int getSteps() {
@@ -91,16 +81,16 @@ public class SensorListener extends IntentService implements SensorEventListener
         }
 
 
-        calendar.setTimeInMillis(System.currentTimeMillis());
+        /*calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 1);
-        okToResetFlag = false;
-        startAlarm(calendar);
+        calendar.set(Calendar.SECOND, 1);*/
+        //startAlarm(calendar);
 
         StepsPrefs = getSharedPreferences("com.example.jacek.stepcounter", Context.MODE_PRIVATE);
         StepsPrefsEditor = StepsPrefs.edit();
-
+//todo jesli wlaczy sie aplikacje zanim boot receiver sie ogarnie
+//todo(czyli krocej niz 30s) to tutaj zrobi tak jakby wcale sie nie resetowal
         if (bootFlag) {
             //Database db = Database.getInstance(this);
             //long i = db.getLastID();
@@ -121,7 +111,7 @@ public class SensorListener extends IntentService implements SensorEventListener
         }
         
         steps = sinceBoot - yesterdaySteps;
-        sendFloatToMainActivity(steps);
+        sendStepsToMainActivity(steps);
 
 
     }
@@ -132,15 +122,14 @@ public class SensorListener extends IntentService implements SensorEventListener
      * @param c
      */
     private void startAlarm(Calendar c) {
-        //todo po 1, czy to powinno byc tu, po 2 zmienic set repeating na zwykly
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = new Intent(this, AlarmReceiver.class);
 
         //Hipoteza: requestcode 1 to on prosi o wyslanie i moze w wolnej chwili wysle a 0 to ze wyslac i chuj
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        alarmManager.cancel(pendingIntent);
+        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
 
 
     }
@@ -154,15 +143,14 @@ public class SensorListener extends IntentService implements SensorEventListener
     public void onSensorChanged(SensorEvent event) {
         sinceBoot = event.values[0];
         steps = sinceBoot - yesterdaySteps;
-        sendFloatToMainActivity(steps);
+        sendStepsToMainActivity(steps);
 
         //pro restarcie appki nadal pamięta kroki dzięki temu shared prefereces
         // bycmoze wystarczy to robic tylko w on destroy
         StepsPrefsEditor.putFloat("yesterdaySteps", yesterdaySteps);
         StepsPrefsEditor.putFloat("sinceBoot", sinceBoot);
         StepsPrefsEditor.commit();
-        //sinceBootStepsSPEditor.putFloat("sinceBoot",sinceBoot);
-        // sinceBootStepsSPEditor.commit();
+
 
     }
 
@@ -179,7 +167,7 @@ public class SensorListener extends IntentService implements SensorEventListener
         StepsPrefsEditor.commit();
 
     }
-    public void sendFloatToMainActivity(float value){
+    public void sendStepsToMainActivity(float value){
         Intent intent = new Intent();
         intent.setAction(MainActivity.BROADCAST_ACTION);
         intent.putExtra("data", value);
