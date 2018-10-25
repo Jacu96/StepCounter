@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="lewo" />
+                android:text="previous day" />
 
             <TextView
                 android:id="@+id/tv_steps"
@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="prawo" />
+                android:text="next day" />
         </LinearLayout>
         <Button
             android:id="@+id/backButton"

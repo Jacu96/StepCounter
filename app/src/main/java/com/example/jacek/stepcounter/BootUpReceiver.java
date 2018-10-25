@@ -8,9 +8,7 @@ public class BootUpReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if(Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())||Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(intent.getAction())) {
-            Toast.makeText(context,"shutdownReceiver boot completed",Toast.LENGTH_LONG).show();
             SensorListener.setBootFlag();
-
             Intent sensorListenerIntent = new Intent(context, SensorListener.class);
             Intent newDayServiceIntent= new Intent(context,NewDayService.class);
             context.startService(sensorListenerIntent);

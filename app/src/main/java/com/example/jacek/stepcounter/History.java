@@ -1,9 +1,7 @@
 package com.example.jacek.stepcounter;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -11,7 +9,6 @@ import java.util.Calendar;
 import android.content.Context;
 import android.widget.Toast;
 
-import java.util.Calendar;
 
 public class History extends AppCompatActivity {
     private TextView tv_label;
@@ -22,10 +19,10 @@ public class History extends AppCompatActivity {
     private Calendar calendar=Calendar.getInstance();
     private Context context=this;
     private int steps;
-    private long recordId;
-    private long maxId;
-    private static final long previousDay=-1;
-    private static final long nextDay=1;
+    private int recordId;
+    private int maxId;
+    private static final int previousDay=-1;
+    private static final int nextDay=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,10 +73,7 @@ public class History extends AppCompatActivity {
         String time;
             time=calendar.get(Calendar.DAY_OF_MONTH)+"."+ 
                  calendar.get(Calendar.MONTH)+"."+
-                 calendar.get(Calendar.YEAR)+" H:"+
-                 calendar.get(Calendar.HOUR_OF_DAY)+" M:"+
-                 calendar.get(Calendar.MINUTE)+" S:"+
-                 calendar.get(Calendar.SECOND);
+                 calendar.get(Calendar.YEAR);
             return time;
     }
     private void showHistoricalStepValue(long nextOrPreviousDay){

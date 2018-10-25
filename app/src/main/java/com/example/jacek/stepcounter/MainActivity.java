@@ -1,7 +1,6 @@
 package com.example.jacek.stepcounter;
 
 
-import android.app.IntentService;
 import android.content.Context;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
@@ -27,8 +26,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv_info;
     private Button historyButton;
     private ProgressBar progressBar;
-    //todo test
-    public static String testowano_Alarm;
 
 
 
@@ -41,21 +38,17 @@ public class MainActivity extends AppCompatActivity {
         tv_steps = (TextView) findViewById(R.id.tv_steps);
         tv_info = (TextView) findViewById(R.id.tv_info);
 
-        //tv_info.setText("Dzisiaj zrobiłeś już tyle kroków:");
-        //tv_steps.setText(steps + "");
+        tv_info.setText("Steps");
 
         Intent sensorListenerIntent = new Intent(this, SensorListener.class);
         Intent newDayServiceIntent= new Intent(this, NewDayService.class);
         startService(sensorListenerIntent);
         startService(newDayServiceIntent);
 
-        //lunching history activity
         historyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(MainActivity.this, History.class);
-                //tak mozna cos przekazac do tego activity
-                //myIntent.putExtra("ID", steps);
                 startActivity(myIntent);
             }
         });
@@ -104,12 +97,7 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
 
             try {
-                //Ta linijka wyświetla na komputerze "UpdateView.onReceive() called"
-                Log.d(TAG, "UpdateView.onReceive() called");
                 steps = intent.getExtras().getFloat("data");
-                //to cos jest tu zeby zobaczyc czy flaga bootUpu dziala
-                //String gowno =intent.getExtras().getString("data");
-                //tv_steps.setText(gowno);
                 tv_steps.setText("" + steps);
                 //Zakładamy 1000 kroków więc steps/10
                 progressBar.setProgress((int) steps / 10);

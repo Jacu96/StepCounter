@@ -27,7 +27,6 @@ public class SensorListener extends IntentService implements SensorEventListener
     public SharedPreferences StepsPrefs;
     public SharedPreferences.Editor StepsPrefsEditor;
     private SensorManager sensorManager;
-    private Calendar calendar = Calendar.getInstance();
 
 
     public SensorListener() {
@@ -43,13 +42,8 @@ public class SensorListener extends IntentService implements SensorEventListener
      * Służy do resetowania licznika kroków
      */
     public static void resetSteps() {
-        Log.d("SensorListener.restetS", "RESET " + yesterdaySteps);
-
-            yesterdaySteps = sinceBoot;
-            steps = 0;
-            Log.d("SensorListener.restetS", "i zresetowal-YESTERDAY=" + yesterdaySteps);
-            Log.d("SensorListener.restetS", "Steps=" + steps);
-            Log.d("SensorListener.restetS", "SinceBoot=" + sinceBoot);
+        yesterdaySteps = sinceBoot;
+        steps = 0;
     }
 
     public static int getSteps() {
@@ -58,7 +52,8 @@ public class SensorListener extends IntentService implements SensorEventListener
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-
+        //todo byc moze wszystko z onCreate powinno byc tu
+        //todo a byc moze nalezy uzyc service zamiast intentService
     }
 
     @Override
@@ -80,58 +75,24 @@ public class SensorListener extends IntentService implements SensorEventListener
             Toast.makeText(this, "Sensor not found", Toast.LENGTH_SHORT).show();
         }
 
-
-        /*calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 1);*/
-        //startAlarm(calendar);
-
         StepsPrefs = getSharedPreferences("com.example.jacek.stepcounter", Context.MODE_PRIVATE);
         StepsPrefsEditor = StepsPrefs.edit();
 //todo jesli wlaczy sie aplikacje zanim boot receiver sie ogarnie
 //todo(czyli krocej niz 30s) to tutaj zrobi tak jakby wcale sie nie resetowal
         if (bootFlag) {
-            //Database db = Database.getInstance(this);
-            //long i = db.getLastID();
-            yesterdaySteps = StepsPrefs.getFloat("yesterdaySteps", 0)-StepsPrefs.getFloat("sinceBoot", 0);
-            //db.close();
-            //pewnie potem on wczyta zle z shared preferences wiec bedzie trzeba zrobic
+            yesterdaySteps = StepsPrefs.getFloat("yesterdaySteps", 0)
+                            -StepsPrefs.getFloat("sinceBoot", 0);
             StepsPrefsEditor.putFloat("yesterdaySteps", yesterdaySteps);
             StepsPrefsEditor.putFloat("sinceBoot", 0);
             StepsPrefsEditor.commit();
-            Toast.makeText(this, "ZADZIALAL czujnik resetu", Toast.LENGTH_LONG).show();
-
             bootFlag = false;
-            Toast.makeText(this, "" + yesterdaySteps, Toast.LENGTH_LONG).show();
 
         } else {
             yesterdaySteps = StepsPrefs.getFloat("yesterdaySteps", 0);
             sinceBoot = StepsPrefs.getFloat("sinceBoot", 0);
         }
-        
         steps = sinceBoot - yesterdaySteps;
         sendStepsToMainActivity(steps);
-
-
-    }
-
-    /**
-     * Metoda jest odpowiedzialna za wywołanie alarmu codziennie o godzinie c (północ)
-     *
-     * @param c
-     */
-    private void startAlarm(Calendar c) {
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        Intent intent = new Intent(this, AlarmReceiver.class);
-
-        //Hipoteza: requestcode 1 to on prosi o wyslanie i moze w wolnej chwili wysle a 0 to ze wyslac i chuj
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        alarmManager.cancel(pendingIntent);
-        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-
-
     }
 
     @Override
@@ -141,17 +102,14 @@ public class SensorListener extends IntentService implements SensorEventListener
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+
         sinceBoot = event.values[0];
         steps = sinceBoot - yesterdaySteps;
         sendStepsToMainActivity(steps);
 
-        //pro restarcie appki nadal pamięta kroki dzięki temu shared prefereces
-        // bycmoze wystarczy to robic tylko w on destroy
         StepsPrefsEditor.putFloat("yesterdaySteps", yesterdaySteps);
         StepsPrefsEditor.putFloat("sinceBoot", sinceBoot);
         StepsPrefsEditor.commit();
-
-
     }
 
     @Override
@@ -162,12 +120,9 @@ public class SensorListener extends IntentService implements SensorEventListener
     @Override
     public void onDestroy() {
         super.onDestroy();
-        StepsPrefsEditor.putFloat("yesterdaySteps", yesterdaySteps);
-        StepsPrefsEditor.putFloat("sinceBoot", sinceBoot);
-        StepsPrefsEditor.commit();
-
     }
-    public void sendStepsToMainActivity(float value){
+
+    public void sendStepsToMainActivity(float value) {
         Intent intent = new Intent();
         intent.setAction(MainActivity.BROADCAST_ACTION);
         intent.putExtra("data", value);
