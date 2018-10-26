@@ -56,18 +56,14 @@ public static void setOkToResetFlag(){
         c.set(Calendar.HOUR_OF_DAY, 23);
         c.set(Calendar.MINUTE, 59);
         c.set(Calendar.SECOND, 0);
-
         date=c.getTimeInMillis()+oneDay;
         return date;
     }
 
     private void setAlarm(long alarmTime){
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
         Intent alarmIntent = new Intent(this, AlarmReceiver.class);
-
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
-        alarmManager.cancel(pendingIntent);
         alarmManager.setExact(AlarmManager.RTC_WAKEUP,alarmTime, pendingIntent);
     }
 

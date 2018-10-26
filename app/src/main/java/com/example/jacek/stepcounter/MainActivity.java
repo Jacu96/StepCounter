@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -20,7 +19,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String BROADCAST_ACTION = "com.example.jacek.stepcounter";
     private static float steps = 0;
-    private final String TAG = "MainActivity";
     private UpdateView updateView;
     private TextView tv_steps;
     private TextView tv_info;

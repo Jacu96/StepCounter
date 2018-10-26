@@ -30,7 +30,7 @@ public class SensorListener extends IntentService implements SensorEventListener
 
 
     public SensorListener() {
-        super("test-service");
+        super(".SensorListener");
     }
 
     public static void setBootFlag() {
@@ -77,8 +77,6 @@ public class SensorListener extends IntentService implements SensorEventListener
 
         StepsPrefs = getSharedPreferences("com.example.jacek.stepcounter", Context.MODE_PRIVATE);
         StepsPrefsEditor = StepsPrefs.edit();
-//todo jesli wlaczy sie aplikacje zanim boot receiver sie ogarnie
-//todo(czyli krocej niz 30s) to tutaj zrobi tak jakby wcale sie nie resetowal
         if (bootFlag) {
             yesterdaySteps = StepsPrefs.getFloat("yesterdaySteps", 0)
                             -StepsPrefs.getFloat("sinceBoot", 0);
