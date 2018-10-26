@@ -1,5 +1,6 @@
 package com.example.jacek.stepcounter;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,7 +19,7 @@ import android.support.annotation.Nullable;
 import java.util.Calendar;
 
 
-public class SensorListener extends IntentService implements SensorEventListener {
+public class SensorListener extends Service implements SensorEventListener {
 
     private static float steps;
     private static float yesterdaySteps;
@@ -28,19 +29,10 @@ public class SensorListener extends IntentService implements SensorEventListener
     public SharedPreferences.Editor StepsPrefsEditor;
     private SensorManager sensorManager;
 
-
-    public SensorListener() {
-        super(".SensorListener");
-    }
-
     public static void setBootFlag() {
         bootFlag = true;
     }
-
-    /**
-     * Metoda jest wywoływana przez AlarmReceiver
-     * Służy do resetowania licznika kroków
-     */
+    
     public static void resetSteps() {
         yesterdaySteps = sinceBoot;
         steps = 0;
@@ -48,17 +40,6 @@ public class SensorListener extends IntentService implements SensorEventListener
 
     public static int getSteps() {
         return (int) steps;
-    }
-
-    @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
-        //todo byc moze wszystko z onCreate powinno byc tu
-        //todo a byc moze nalezy uzyc service zamiast intentService
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_STICKY;
     }
 
     @Override
@@ -79,7 +60,7 @@ public class SensorListener extends IntentService implements SensorEventListener
         StepsPrefsEditor = StepsPrefs.edit();
         if (bootFlag) {
             yesterdaySteps = StepsPrefs.getFloat("yesterdaySteps", 0)
-                            -StepsPrefs.getFloat("sinceBoot", 0);
+                    -StepsPrefs.getFloat("sinceBoot", 0);
             StepsPrefsEditor.putFloat("yesterdaySteps", yesterdaySteps);
             StepsPrefsEditor.putFloat("sinceBoot", 0);
             StepsPrefsEditor.commit();
@@ -92,6 +73,13 @@ public class SensorListener extends IntentService implements SensorEventListener
         steps = sinceBoot - yesterdaySteps;
         sendStepsToMainActivity(steps);
     }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
+
+
 
     @Override
     public IBinder onBind(Intent intent) {

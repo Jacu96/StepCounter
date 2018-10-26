@@ -1,5 +1,6 @@
 package com.example.jacek.stepcounter;
 
+import android.app.IntentService;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -10,30 +11,16 @@ import android.support.annotation.Nullable;
 import java.util.Calendar;
 
 
-public class NewDayService extends Service {
+public class NewDayService extends IntentService {
 
     private static boolean okToResetFlag = false;
 
-
-public static void setOkToResetFlag(){
-    okToResetFlag=true;
-}
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if(okToResetFlag) {
-            putDataInDatabase();
-            SensorListener.resetSteps();
-        }
-        setAlarm(nextDayMidnight());
-        stopSelf();
-        return START_NOT_STICKY;
+    public NewDayService() {
+        super(".NewDayService");
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    public static void setOkToResetFlag(){
+    okToResetFlag=true;
     }
 
     @Override
@@ -41,6 +28,25 @@ public static void setOkToResetFlag(){
         super.onCreate();
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_NOT_STICKY;
+    }
+
+    @Override
+    protected void onHandleIntent(@Nullable Intent intent) {
+        if(okToResetFlag) {
+            putDataInDatabase();
+            SensorListener.resetSteps();
+        }
+        setAlarm(nextDayMidnight());
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
     @Override
     public void onDestroy() {
