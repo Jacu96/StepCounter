@@ -11,12 +11,6 @@ import android.hardware.SensorManager;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
-import android.app.IntentService;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.support.annotation.Nullable;
-
-import java.util.Calendar;
 
 
 public class SensorListener extends Service implements SensorEventListener {
@@ -32,7 +26,7 @@ public class SensorListener extends Service implements SensorEventListener {
     public static void setBootFlag() {
         bootFlag = true;
     }
-    
+
     public static void resetSteps() {
         yesterdaySteps = sinceBoot;
         steps = 0;
@@ -60,7 +54,7 @@ public class SensorListener extends Service implements SensorEventListener {
         StepsPrefsEditor = StepsPrefs.edit();
         if (bootFlag) {
             yesterdaySteps = StepsPrefs.getFloat("yesterdaySteps", 0)
-                    -StepsPrefs.getFloat("sinceBoot", 0);
+                    - StepsPrefs.getFloat("sinceBoot", 0);
             StepsPrefsEditor.putFloat("yesterdaySteps", yesterdaySteps);
             StepsPrefsEditor.putFloat("sinceBoot", 0);
             StepsPrefsEditor.commit();
@@ -79,8 +73,6 @@ public class SensorListener extends Service implements SensorEventListener {
         return START_STICKY;
     }
 
-
-
     @Override
     public IBinder onBind(Intent intent) {
         throw new UnsupportedOperationException("Not yet implemented");
@@ -96,6 +88,8 @@ public class SensorListener extends Service implements SensorEventListener {
         StepsPrefsEditor.putFloat("yesterdaySteps", yesterdaySteps);
         StepsPrefsEditor.putFloat("sinceBoot", sinceBoot);
         StepsPrefsEditor.commit();
+        Log.d("kroki", "zrobiony krok " + steps);
+
     }
 
     @Override
@@ -108,11 +102,21 @@ public class SensorListener extends Service implements SensorEventListener {
         super.onDestroy();
     }
 
+    /* public void sendStepsToMainActivity(float value) {
+         Intent intent = new Intent();
+         intent.setAction(MainActivity.BROADCAST_ACTION);
+         intent.putExtra("data", value);
+         sendBroadcast(intent);
+     }*/
     public void sendStepsToMainActivity(float value) {
+        Log.d("sendStepsToMainActivity", "POWINIEN WYSLAC SKURWIEL " + steps);
         Intent intent = new Intent();
         intent.setAction(MainActivity.BROADCAST_ACTION);
         intent.putExtra("data", value);
+        intent.putExtra("whichService", 3);
         sendBroadcast(intent);
+
+
     }
 
 }
